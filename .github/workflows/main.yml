@@ -30,11 +30,11 @@ jobs:
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: set image textblueprints/sentiment-app:${{ github.event.release.tag_name}} --record
+        args: set image --record textblueprints/sentiment-app:${{ github.event.release.tag_name}}
     - name: verify deployment
       uses: steebchen/kubectl@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        KUBECTL_VERSION: "1.15"
+        KUBECTL_VERSION: "1.14"
       with:
         args: '"rollout status textblueprints/sentiment-app"' 
