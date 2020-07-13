@@ -37,7 +37,7 @@ jobs:
       uses: sidhusmart/kubectl@v1.0
       env:
         KUBE_CONFIG_DATA: '/github/workspace/.kube/config'
-	UNCODED: 'false'
+        UNCODED: 'false'
       with:
         args: set image --record deployment.apps/sentiment-app container=textblueprints/sentiment-app:${{ github.event.release.tag_name }}
     - name: verify deployment
