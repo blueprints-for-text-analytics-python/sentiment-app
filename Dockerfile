@@ -1,7 +1,7 @@
 FROM continuumio/miniconda3
 
 # Add environment.yml to the build context and create the environment
-ARG conda_env=sentiment_apps
+ARG conda_env=sentiment_app
 ADD environment.yml /tmp/environment.yml
 RUN conda env create -f /tmp/environment.yml
 
