@@ -25,15 +25,25 @@ jobs:
         add_git_labels: true
         push: ${{ startsWith(github.ref, 'refs/tags/') }}
 
-    - name: update deployment
-      uses: shashank0202/docker-build-push-gcr-update-gke-deployment-action@v1.4
+    - name: Get kubeconfig file from GKE
+      uses: machine-learning-apps/gke-kubeconfig@master
       with:
-        service_account: ${{ secrets.GCLOUD_AUTH}}
-        zone: 'us-central1-a'
-        project_id: 'sentiment-rest-api-282720'
-        registry: 'registry.hub.docker.com'
-        image_name: 'textblueprints/sentiment-app:${{ github.event.release.tag_name }}'
-        cluster: 'sentiment-app-cluster'
-        namespace: 'default'
-        deployment: 'sentiment-app'
-        container: 'sentiment-app'
+        application_credentials: ${{ secrets.GCLOUD_AUTH }}
+        project_id: ${{ secrets.PROJECT_ID }}
+        location_zone: ${{ secrets.LOCATION_ZONE }}
+        cluster_name: ${{ secrets.CLUSTER_NAME }}
+
+    - name: deploy to cluster
+      uses: steebchen/kubectl@master
+      env:
+        KUBE_CONFIG_DATA: '/github/workspace/.kube/config'
+      with:
+        args: set image --record textblueprints/sentiment-app:${{ github.event.release.tag_name }} 
+
+    - name: verify deployment
+      uses: steebchen/kubectl@master
+      env:
+        KUBE_CONFIG_DATA: '/github/workspace/.kube/config'
+        KUBECTL_VERSION: "1.14"
+      with:
+        args: '"rollout status textblueprints/sentiment-app"'
