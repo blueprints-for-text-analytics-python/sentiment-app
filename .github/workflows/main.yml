@@ -25,16 +25,15 @@ jobs:
         add_git_labels: true
         push: ${{ startsWith(github.ref, 'refs/tags/') }}
 
-    - name: update the cluster
-      uses: steebchen/kubectl@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+    - name: update deployment
+      uses: actions/docker-build-push-gcr-update-gke-deployment-action@v1.4
       with:
-        args: set image --record textblueprints/sentiment-app:${{ github.event.release.tag_name}}
-    - name: verify deployment
-      uses: steebchen/kubectl@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        KUBECTL_VERSION: "1.14"
-      with:
-        args: '"rollout status textblueprints/sentiment-app"' 
+        service_account: ${{ secrests.GCLOUD_AUTH}}
+        zone: 'us-central1-a'
+        project_id: 'sentiment-rest-api-282720'
+        registry: 'registry.hub.docker.com'
+        image_name: 'textblueprints/sentiment-app:${{ github.event.release.tag_name }}'
+        cluster: 'sentiment-app-cluster'
+        namespace: 'default'
+        deployment: 'sentiment-app'
+        container: 'sentiment-app'
