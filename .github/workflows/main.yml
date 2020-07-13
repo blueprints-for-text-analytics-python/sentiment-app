@@ -24,3 +24,17 @@ jobs:
         tag_with_ref: true
         add_git_labels: true
         push: ${{ startsWith(github.ref, 'refs/tags/') }}
+
+    - name: update the cluster
+      uses: steebchen/kubectl@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: set image textblueprints/sentiment-app:${{ github.event.release.tag_name}} --record
+    - name: verify deployment
+      uses: steebchen/kubectl@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        KUBECTL_VERSION: "1.15"
+      with:
+        args: '"rollout status textblueprints/sentiment-app"' 
