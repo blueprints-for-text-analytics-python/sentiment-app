@@ -26,7 +26,7 @@ jobs:
         push: ${{ startsWith(github.ref, 'refs/tags/') }}
 
     - name: update deployment
-      uses: actions/docker-build-push-gcr-update-gke-deployment-action@v1.4
+      uses: shashank0202/docker-build-push-gcr-update-gke-deployment-action@v1.4
       with:
         service_account: ${{ secrets.GCLOUD_AUTH}}
         zone: 'us-central1-a'
