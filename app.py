@@ -3,6 +3,7 @@ from flasgger import Swagger
 from flask import Flask, request, jsonify
 import preprocessing
 
+# Instantiating the Flask app
 app = Flask(__name__)
 swagger = Swagger(app)
 
