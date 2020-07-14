@@ -13,6 +13,7 @@ def predict():
 
   The sentiment analysis model has been trained using Amazon customer reviews and works best in similar scenarios
   When the text of a customer review is passed, it is cleaned and either a POSITIVE or NEGATIVE sentiment prediction is returned
+  Change
 
   ---
   parameters:
