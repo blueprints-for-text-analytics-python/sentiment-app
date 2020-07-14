@@ -40,7 +40,7 @@ jobs:
         KUBE_CONFIG_DATA: '/github/workspace/.kube/config'
         UNCODED: 'false'
       with:
-        args: set image --record deployment.apps/sentiment-app sentiment-app=textblueprints/sentiment-app:$GIT_TAG_NAME
+        args: set image --record deployment.apps/sentiment-app sentiment-app=textblueprints/sentiment-app:${{ env.GIT_TAG_NAME }}
     - name: verify deployment
       uses: sidhusmart/kubectl@v1.3
       env:
