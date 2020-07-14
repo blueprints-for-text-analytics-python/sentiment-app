@@ -34,14 +34,14 @@ jobs:
         cluster_name: ${{ secrets.CLUSTER_NAME }}
 
     - name: deploy to cluster
-      uses: sidhusmart/kubectl@v1.2
+      uses: sidhusmart/kubectl@v1.3
       env:
         KUBE_CONFIG_DATA: '/github/workspace/.kube/config'
         UNCODED: 'false'
       with:
         args: set image --record deployment.apps/sentiment-app container=textblueprints/sentiment-app:${{ github.event.release.tag_name }}
     - name: verify deployment
-      uses: sidhusmart/kubectl@v1.2
+      uses: sidhusmart/kubectl@v1.3
       env:
         KUBE_CONFIG_DATA: '/github/workspace/.kube/config'
         KUBECTL_VERSION: "1.14"
