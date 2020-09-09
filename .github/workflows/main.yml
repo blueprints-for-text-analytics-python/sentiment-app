@@ -15,35 +15,39 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Get the Tag Name
+      id: source_details
+      run: |-
+        echo ::set-output name=TAG_NAME::${GITHUB_REF#refs/tags/}
+
     - name: build and push image
       uses: docker/build-push-action@v1
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        repository: textblueprints/sentiment-app
+        repository: sidhusmart/sentiment-app
         tag_with_ref: true
         add_git_labels: true
         push: ${{ startsWith(github.ref, 'refs/tags/') }}
-    - name: Get kubeconfig file from GKE
-      uses: machine-learning-apps/gke-kubeconfig@master
+    
+    # Setup gcloud CLI
+    - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
-        application_credentials: ${{ secrets.GCLOUD_AUTH }}
+        version: '290.0.1'
+        service_account_key: ${{ secrets.GCLOUD_AUTH }}
         project_id: ${{ secrets.PROJECT_ID }}
-        location_zone: ${{ secrets.LOCATION_ZONE }}
-        cluster_name: ${{ secrets.CLUSTER_NAME }}
-    - name: Get Tag Name
-      uses: olegtarasov/get-tag@v2
-    - name: deploy to cluster
-      uses: sidhusmart/kubectl@v1.3
-      env:
-        KUBE_CONFIG_DATA: '/github/workspace/.kube/config'
-        UNCODED: 'false'
-      with:
-        args: set image --record deployment.apps/sentiment-app sentiment-app=textblueprints/sentiment-app:${{ env.GIT_TAG_NAME }}
-    - name: verify deployment
-      uses: sidhusmart/kubectl@v1.3
-      env:
-        KUBE_CONFIG_DATA: '/github/workspace/.kube/config'
-        KUBECTL_VERSION: "1.14"
-      with:
-        args: '"rollout status deployment.apps/sentiment-app"'
+
+    # Get the GKE credentials so we can deploy to the cluster
+    - run: |-
+        gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME }} --zone ${{ secrets.LOCATION_ZONE }}
+
+    # Deploy the Docker image to the GKE cluster
+    - name: Deploy
+      run: |-
+        kubectl set image --record deployment.apps/sentiment-app sentiment-app=textblueprints/sentiment-app:${{ steps.source_details.outputs.TAG_NAME }}
+
+    # Verify that deployment completed 
+    - name: Verify Deployment
+      run: |-
+        kubectl rollout status deployment.apps/sentiment-app
+        kubectl get services -o wide
