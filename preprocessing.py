@@ -1,26 +1,22 @@
-import re
+# Cleaning up the data to remove special characters - re-using blueprint from Chapter 5
 import html
-
-# tags like <tab>
-RE_TAG = re.compile(r'<[^<>]*>')
-# markdown URLs, like [Some text](https://....)
-RE_MD_URL = re.compile('\[([^\[\]]*)\]\([^\(\)]*\)')
-# text or code in brackets like [0]
-RE_BRACKET = re.compile('\[[^\[\]]*\]')
-# standalone sequences of specials, matches &# but not #cool
-RE_SPECIAL = re.compile(r'(?:^|\s)[&#<>{}\[\]+|\\:-]{1,}(?:\s|$)')
-# standalone sequences of hyphens like --- or ==
-RE_HYPHEN_SEQ = re.compile(r'(?:^|\s)[\-=\+]{2,}(?:\s|$)')
-# sequences of white spaces
-RE_MULTI_SPACE = re.compile('\s+')
+import re
 
 def clean(text):
     # convert html escapes like &amp; to characters.
-    text = html.unescape(text)
-    text = RE_TAG.sub(' ', text)
-    text = RE_MD_URL.sub(r'\1', text)
-    text = RE_BRACKET.sub(' ', text)
-    text = RE_SPECIAL.sub(' ', text)
-    text = RE_HYPHEN_SEQ.sub(' ', text)
-    text = RE_MULTI_SPACE.sub(' ', text)
+    text = html.unescape(text) 
+    # tags like <tab>
+    text = re.sub(r'<[^<>]*>', ' ', text)
+    # markdown URLs like [Some text](https://....)
+    text = re.sub(r'\[([^\[\]]*)\]\([^\(\)]*\)', r'\1', text)
+    # text or code in brackets like [0]
+    text = re.sub(r'\[[^\[\]]*\]', ' ', text)
+    # standalone sequences of specials, matches &# but not #cool
+    text = re.sub(r'(?:^|\s)[&#<>{}\[\]+|\\:-]{1,}(?:\s|$)', ' ', text)
+    # standalone sequences of hyphens like --- or ==
+    text = re.sub(r'(?:^|\s)[\-=\+]{2,}(?:\s|$)', ' ', text)
+    # sequences of white spaces
+    text = re.sub(r'\s+', ' ', text)
     return text.strip()
+
+

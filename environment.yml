@@ -2,11 +2,9 @@ name: sentiment-app
 channels:
   - conda-forge
 dependencies:
-  - python=3.6.4
-  - flask
-  - pandas
-  - scikit-learn==0.21.3 
-  - gunicorn
-  - pip
-  - pip:
-    - flasgger==0.9.2
+  - python==3.6.4
+  - fastapi==0.59.0
+  - pandas==1.0.5
+  - scikit-learn>=0.22.2
+  - gunicorn==20.0.4
+  - uvicorn==0.11.3
