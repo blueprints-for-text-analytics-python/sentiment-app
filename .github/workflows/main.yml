@@ -39,12 +39,15 @@ jobs:
 
     # Get the GKE credentials so we can deploy to the cluster
     - run: |-
-        gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME }} --zone ${{ secrets.LOCATION_ZONE }}
+        gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME }} \
+					   --zone ${{ secrets.LOCATION_ZONE }}
 
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
       run: |-
-        kubectl set image --record deployment.apps/sentiment-app sentiment-app=textblueprints/sentiment-app:${{ steps.source_details.outputs.TAG_NAME }}
+        kubectl set image --record deployment.apps/sentiment-app \
+			    sentiment-app=textblueprints/sentiment-app: \
+			    ${{ steps.source_details.outputs.TAG_NAME }}
 
     # Verify that deployment completed 
     - name: Verify Deployment
